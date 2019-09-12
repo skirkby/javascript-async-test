@@ -7,7 +7,7 @@ const p = document.querySelector('p');
 let stopMe = false;
 function longRunningFunction() {
   for (let i = 0; i<=20; i++) {
-    if (stopMe) {p.innerText = 'stopped';  break;}
+    if (stopMe) {p.innerText = p.innerText + '\nstopped';  break;}
     console.log(`count: ${i}`);
     p.innerText = `count: ${i}`;  
     wait(500);

@@ -60,7 +60,7 @@ stopBtn.addEventListener('click', (e) => {
     if (typeof(w) !== 'undefined') {
         w.terminate();
         w = undefined;
-        p.innerText = 'stopped...';
+        p.innerText = p.innerText + '\nstopped...';
     }
 })
 
