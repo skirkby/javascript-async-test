@@ -1,0 +1,145 @@
+
+//
+// this function allows us to wait for a certain number of milliseconds
+//
+// it just compares the current time with the start time in a while loop
+// until the right amount of time has passed.
+//
+// This while loop is blocking... it's creating a LOT of Date objects...
+//
+// While it is running, the thread is locked, and anything else on
+// the thread has to wait.
+//
+// If you call this function multiple times in a row, the thread will
+// be locked for the duration of all of the runs.
+//
+function wait(ms){
+    var start = new Date().getTime();
+    var end = start;
+    while(end < start + ms) {
+      end = new Date().getTime();
+   }
+ }
+
+
+//
+// get our dom elements so we can update the <p> with the count,
+// and so that we can create click event handlers for the start
+// and stop <button>'s.
+//
+const stopBtn = document.querySelector('.stop-btn');
+const goBtn = document.querySelector('.go-btn');
+const p = document.querySelector('p');
+
+
+//
+// this is our long running function. It just counts to 20,
+// updating the <p> element with the current count each time.
+// It also waits 500 milliseconds in between each count, using
+// our wait() function (above).
+//
+// Remember, wait() is a blocking call...
+// So this loop has the effect of blocking all code on the main
+// thread, including UI code. Bad experience for the user!
+//
+let stopMe = false;
+function longRunningFunction() {
+
+  //
+  // This attempt will definitely block our main thread. This for
+  // loop is executed on the main thread, in our call stack.
+  // Because the wait() function is blocking, queueing several
+  // instances of it on our call stack has the effect of blocking the
+  // thread for the entire time it is running.
+  //
+
+  // for (let i = 0; i<=20; i++) {
+  //   if (stopMe) {p.innerText = 'stopped';  break;}
+  //   console.log(`count: ${i}`);
+  //   p.innerText = `count: ${i}`;  
+  //   wait(500);
+  // }  
+
+  //
+  // Some people say that "setTimeout()" is "asynchronous", but
+  // it's deceiving... 
+  //
+  // setTimeout() will mimic what our wait() function does... it
+  // will wait a certain amount of time before executing the
+  // callback that is passed to it. BUT...
+  //
+  // Once the time elapses, the callback function is put on the 
+  // execution call stack of our main app - our code is run on the 
+  // main thread!
+  //
+  // In this example, we call setTimeout() with a wait time of 0 milliseconds...
+  // This will cause the callback function to be placed on the call stack 
+  // immediately, where it will run on our main thread. The call
+  // to wait() is still blocking, and blocks the same thread that our
+  // UI is running on.
+  //
+  // All setTimeout() does is put the for loop on the call stack to be
+  // executed on our main thread.
+  //
+
+  // setTimeout(() => {
+  //   for (let i = 0; i<=20; i++) {
+  //     if (stopMe) {p.innerText = 'stopped';  break;}
+  //     console.log(`count: ${i}`);
+  //     p.innerText = `count: ${i}`;  
+  //     wait(500);
+  //   }  
+  // }, 0);
+  //
+
+  //
+  // try it with setInterval()
+  // This works because the code that ends up back on our call stack is very 
+  // lightweight ... it's just the increment, console.log, and updating of
+  // <p>. But, be aware that this code is NOT asynchronous ... it is still
+  // running on our call stack in the main thread! It's just not blocking
+  // because it runs so fast that the UI has time to react to the user.
+  //
+
+  let intervalId;
+  let i = 0;
+  // save the intervalId from setInterval() so we can use it to clear the
+  // interval later if we need to.
+  intervalId = setInterval(() => {
+    i++;
+    console.log(`count: ${i}`);
+    p.innerText = `count: ${i}`;
+    if (stopMe || (i === 20)) {
+      // clearInterval() stops the setInterval() function from putting
+      // our code on the call stack again, and clears it. We use
+      // the interval ID that we retrieved when we set the interval function.
+      clearInterval(intervalId);
+    }
+  }, 500);
+
+}
+
+//
+// click event handler to initialize our "stopMe" variable
+// (which the long running function uses to determine if it should
+// stop), and start the long running function.
+//
+goBtn.addEventListener('click', (e) => {
+    console.log('starting!');
+    stopMe = false;
+    longRunningFunction();
+    console.log('done');
+
+})
+
+//
+// click event handler to stop the long running function by
+// setting the stopMe variable to true (the long running
+// function checks for this...)
+//
+stopBtn.addEventListener('click', (e) => {
+  console.log('stopping...!');
+  stopMe = true;
+})
+
+

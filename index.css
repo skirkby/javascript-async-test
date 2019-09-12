@@ -1,0 +1,16 @@
+.mydiv {
+    background-color: #44f4f4;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  
+  .stop-btn {
+    background-color: 'red';
+  }
+
+  .go-btn {
+      background-color: 'green';
+  }
