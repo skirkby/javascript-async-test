@@ -1,37 +1,23 @@
+const express = require('express');
+const path = require('path');
+const open = require('open');
 
+const port = 4000;
+const app = express();
 
-const stopBtn = document.querySelector('.stop-btn');
-const goBtn = document.querySelector('.go-btn');
-const p = document.querySelector('p');
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './index.html'));
+});
 
-let stopMe = false;
-function longRunningFunction() {
-  for (let i = 0; i<=20; i++) {
-    if (stopMe) {p.innerText = 'stopped';  break;}
-    console.log(`count: ${i}`);
-    p.innerText = `count: ${i}`;  
-    wait(500);
-  }  
-}
+app.get('/:filename', (req, res) => {
+    const { filename } = req.params;
+    res.sendFile(path.join(__dirname, './' + filename));
+});
 
-goBtn.addEventListener('click', (e) => {
-    console.log('starting!');
-    stopMe = false;
-    longRunningFunction();
-    console.log('done');
-
+app.listen(port, (err) => {
+    if (err) {
+        console.log(err);
+    } else {
+        open('http://localhost:' + port);
+    }
 })
-
-stopBtn.addEventListener('click', (e) => {
-  console.log('stopping...!');
-  stopMe = true;
-})
-
-function wait(ms){
-  var start = new Date().getTime();
-  var end = start;
-  while(end < start + ms) {
-    end = new Date().getTime();
- }
-}
-

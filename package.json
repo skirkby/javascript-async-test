@@ -1,0 +1,16 @@
+{
+  "name": "learn-webworkers1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:skirkby/javascript-async-test",
+  "author": "Sean Kirkby <sean.kirkby@niceincontact.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.1",
+    "open": "^7.0.0"
+  },
+  "scripts": {
+    "server": "nodemon index.js"
+  }
+}
